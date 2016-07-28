@@ -65,7 +65,7 @@ void control_motor(int speed, int pwmPin, int INaPin, int INbPin){
     }
 }
 
-// In time loop, receives from serial and control 6 motors
+// In time loop, receive from serial and control 6 motors
 void loop() {
     static int speed[6];
     static char buff[30];
@@ -96,7 +96,7 @@ void loop() {
     control_motor(speed[4], pwmPin4, INaPin4, INbPin4);
     control_motor(speed[5], pwmPin5, INaPin5, INbPin5);
 
-    // send message to raspberry pi
+    // send messages to raspberry pi
     Serial.print(speed[0]); Serial.print(",");
     Serial.print(speed[1]); Serial.print(",");
     Serial.print(speed[2]); Serial.print(",");
