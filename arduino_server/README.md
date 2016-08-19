@@ -20,7 +20,7 @@ The name is like below.
 - web client: `remotecontrol`
 
 ## Event Name
-### Join the room
+### enter_room
 To join in the room, the client has to send messages of its room name.
 - event name: `enter_room`
 - key name of the JSON data: `room`
@@ -43,3 +43,24 @@ cmd_vel
 	- x
 	- y
 	- z
+
+It can be decoded like this.
+```javascript
+socket.on('cmd_vel', function(data) {
+        var linear = data.linear;
+        var angular = data.angular;
+        console.log("linear = {" + linear.x + ", " + linear.y + "," + linear.z + "}");
+        console.log("angular = {" + angular.x + ", " + angular.y + "," + angular.z + "}");
+    });
+```
+### transfer
+By using this event data can be transferred to other room.
+
+-event name: `transfer`
+- JSON data:
+	- `room`: name of the destination room
+	- `eventname`: name of the event sent to the room
+	- `data`: data to be sent
+
+	
+
