@@ -4,6 +4,7 @@ It consists with
 
 - Six-wheel car platform
 - Dual VNH3SP30 Motor Driver Carrier MD03A
+- Battery
 - Arduino
 - Raspberry Pi
 - Wifi module
@@ -17,3 +18,4 @@ It consists with
 4. [ROS installation and setup for Raspberry Pi](https://github.com/mktk1117/six_wheel_robot/wiki/ROS-installation-and-setup-for-Raspberry-Pi)
 5. [Communication between Arduino and Raspberry Pi](https://github.com/mktk1117/six_wheel_robot/wiki/Communication-between-Arduino-and-Raspberry-Pi)
 6. [Communication between Raspberry Pi and PC](https://github.com/mktk1117/six_wheel_robot/wiki/Communication-between-Raspberry-Pi-and-PC)
+7. [Make a ROS package to communicate with Arduino to control motors](https://github.com/mktk1117/six_wheel_robot/wiki/Make-a-ROS-package-to-communicate-with-Arduino-to-control-motors)
