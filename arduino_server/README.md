@@ -34,6 +34,7 @@ In here, the client can be connected in the room `remotecontrol`.
 ### cmd_vel
 This event is to control the vehicle with cmd_vel message.
 This message contains linear velocity and angular velocity.
+
 cmd_vel
 - linear
 	- x
