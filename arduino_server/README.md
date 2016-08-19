@@ -13,6 +13,22 @@ so the user can stop or control the vehicle remotely.
 - Translate the cmd_vel message to Arduino command
 - Send command to Arduino with serial
 
+##Usage
+First, download this folder.
+```bash
+wget https://raw.githubusercontent.com/mktk1117/six_wheel_robot/master/arduino_server
+```
+Then, you have to install socket.io and node-serialport.
+```bash
+cd arduino_server
+npm install socket.io
+npm install serialport
+```
+Run the server
+```bash
+node app.js
+```
+
 ##Room Name definition
 In this server, room is used to select who to send.  
 The name is like below.
@@ -57,7 +73,7 @@ socket.on('cmd_vel', function(data) {
 ### transfer
 By using this event data can be transferred to other room.
 
--event name: `transfer`
+- event name: `transfer`
 - JSON data:
 	- `room`: name of the destination room
 	- `eventname`: name of the event sent to the room
