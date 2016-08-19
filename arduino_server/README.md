@@ -16,7 +16,7 @@ so the user can stop or control the vehicle remotely.
 ##Usage
 First, download this folder.
 ```bash
-wget https://raw.githubusercontent.com/mktk1117/six_wheel_robot/master/arduino_server
+svn export https://github.com/mktk1117/six_wheel_robot/trunk/arduino_server
 ```
 Then, you have to install socket.io and node-serialport.
 ```bash
