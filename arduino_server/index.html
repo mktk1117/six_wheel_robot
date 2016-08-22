@@ -8,36 +8,141 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 </head>
+
 <body>
     <div class="container">
         <h1>Six Wheel Robot</h1>
         <form class="form-inline">
             <div class="form-group">
         </form>
-        <div id="chatLogs"></div>
     </div>
+    <div class="box">
+        <div class="box1" style="float: left; width: 50%">
+        <h1, id="st_head">Stop</h1>
+                </div>
+        <div class="box2" style="float: right; width: 50%">
+        <button type="button" class="btn btn-primary" id="startstopButton" style="font-size:50px; height:500px; width:500px" onclick="startstop()">Start</button> </div>
+                </div>
+        <div class "box3", id="cmd_vel">
+            <h2, id="cmdhead", style="font-size:25px">cmd_vel</h2>
+            <br>
+            <h2, style="font-size:20px"></h2>
+            <h2, id="cmdlinear", style="font-size:20px"> linear.x :0 <br> angular.z: 0</h2>
+        </div>
+        <div class="logbox" id="logs"><h2>Message from Raspberry Pi</h2></div>
+
  
     <script type="text/javascript">
         var socket = io.connect(); //connect to socket
         var isEnter = false;
         var name = '';
+        var startstop = false;
+        $("#st_head").text("AutoControl: Stop");
+        $("#st_head").css("background", "#d9534f");
+        $("#st_head").css("fontSize", "30px");
+        send_stop();
  
-        socket.on("show_cmd_vel", function(data){appendMsg(data.value)});
-        function appendMsg(text) {
-            $("#chatLogs").append("<div>" + text + "</div>");
-        }
+        <!-- socket.on("show_cmd_vel", function(data){appendMsg(data.value)}); -->
+        <!-- function appendMsg(text) {                                        -->
+        <!--     $("#logs").append("<div>" + text + "</div>");                 -->
+        <!-- }                                                                 -->
 
-        socket.on("cmd_vel", function(data){appendMsg("linear = " + data.linear.x + "\tangular = " + data.angular.z)});
-        function appendMsg(text) {
-            $("#chatLogs").append("<div>" + text + "</div>");
+        socket.on("cmd_vel", function(data){showCmd(data.linear.x, data.angular.z)});
+        function showCmd(linear, angular) {
+            $("#cmdlinear").html("linear.x :" + linear + "<br>" + "angular.z: " + angular);
+            <!-- $("#cmdlinear").css("fontSize", "20px");                                  -->
+            <!-- <!-- $("#cmdangular").text(angular); -->                                  -->
         }
 
         socket.on("message", function(data){appendMsg(data.message)});
         function appendMsg(text) {
-            $("#chatLogs").append("<div>" + text + "</div>");
+            $("#logs").append("<div>" + text + "</div>");
         }
         socket.emit("enter_room", {room : "remotecontrol"});
- 
+
+        function send_start(){
+            startstop = true;
+            $("button").text("Stop");
+            $("button").css("background", "#d9534f");
+            $("#st_head").text("AutoControl: Start");
+            $("#st_head").css("background", "#428bca");
+            $("#st_head").css("fontSize", "30px");
+            socket.emit("startstop", {flag : "start"});
+        }
+    
+        function send_stop(){
+            startstop = false;
+            $("button").text("Start");
+            $("button").css("background", "#428bca");
+            $("#st_head").text("AutoControl: Stop");
+            $("#st_head").css("background", "#d9534f");
+            $("#st_head").css("fontSize", "30px");
+            socket.emit("startstop", {flag : "stop"});
+        }
+
+        $("button").click(function() {
+            if(startstop == false){
+                send_start();
+            }
+            else{
+                send_stop();
+            }
+        });
+
+
+      $(window).on('keydown', function(e) {
+            var keydown_flag = false;
+            if(e.keyCode === 37) { // ←
+                send_stop();
+                keydown_flag = true;
+                var linear = {"x": 0, "y": 0, "z": 0};
+                var angular = {"x": 0, "y": 0, "z": -1};
+            }
+            if(e.keyCode === 38) { // ↑
+                send_stop();
+                keydown_flag = true;
+                var linear = {"x": 1, "y": 0, "z": 0};
+                var angular = {"x": 0, "y": 0, "z": 0};
+            }
+            if(e.keyCode === 39) { // →
+                send_stop();
+                keydown_flag = true;
+                var linear = {"x": 0, "y": 0, "z": 0};
+                var angular = {"x": 0, "y": 0, "z": 1};
+            }
+            if(e.keyCode === 40) { // ↓
+                send_stop();
+                keydown_flag = true;
+                var linear = {"x": -1, "y": 0, "z": 0};
+                var angular = {"x": 0, "y": 0, "z": 0};
+            }
+            if(keydown_flag) {
+                var cmd_vel = {"linear": linear, "angular": angular, "from": "remotecontrol"}
+                socket.emit("cmd_vel", cmd_vel);
+            }
+        });
+      $(window).on('keyup', function(e) {
+            <!-- var keydown_flag = false;     -->
+            <!-- if(e.keyCode === 37) { // ← -->
+            <!--     keydown_flag = true;      -->
+            <!-- }                             -->
+            <!-- if(e.keyCode === 38) { // ↑ -->
+            <!--     keydown_flag= true;       -->
+            <!-- }                             -->
+            <!-- if(e.keyCode === 39) { // → -->
+            <!--     keydown_flag = true;      -->
+            <!-- }                             -->
+            <!-- if(e.keyCode === 40) { // ↓ -->
+            <!--     keydown_flag = true;      -->
+            <!-- }                             -->
+            <!-- if(keydown_flag == true){     -->
+            send_stop();
+            var linear = {"x": 0, "y": 0, "z": 0};
+            var angular = {"x": 0, "y": 0, "z": 0};
+            var cmd_vel = {"linear": linear, "angular": angular, "from": "remotecontrol"}
+            socket.emit("cmd_vel", cmd_vel);
+        });
+
  
     </script>
 </body>
