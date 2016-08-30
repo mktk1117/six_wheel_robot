@@ -117,10 +117,10 @@ int main(int argc, char *argv[]){
     cv::circle(dst, Point(dst.cols / 2, dst.rows), r, Scalar(255, 255, 0), 5);
     // cv::line(cutted_org, Point(p1.x(), p1.y()), Point(p2.x(), p2.y()), Scalar(255,255,0), 3, 8);
 
-    Vector2d p(org.cols , y_border * ld.skip_step_);
-    Vector2d pp(0, y_border * ld.skip_step_);
-    print(ld.transform_point_homography(p));
-    print(ld.transform_point_homography(pp));
+    // Vector2d p(org.cols , y_border * ld.skip_step_);
+    // Vector2d pp(0, y_border * ld.skip_step_);
+    // print(ld.transform_point_homography(p));
+    // print(ld.transform_point_homography(pp));
 
     imshow("Original", org);
     // imshow("black", black_image);

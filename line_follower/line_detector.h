@@ -4,6 +4,7 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <Eigen/Core>
+#include "parameter.h"
 
 using namespace Eigen;
 using namespace cv;
@@ -15,6 +16,8 @@ public:
     int horizon_th_;
     int black_th_;
     Matrix3d homography_matrix_;
+
+    Parameter param_;
 
 
     LineDetector();
