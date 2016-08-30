@@ -8,13 +8,13 @@ using namespace Eigen;
 class Parameter{
 public:
     // how many pixels to skip in extract_rgb
-    int skip_step_;
+    int skip_step;
     // threshold to detect horizon line
-    int horizon_th_;
+    int horizon_th;
     // threshold to binarization
-    int black_th_;
+    int black_th;
     // matrix used at homography transformation
-    Matrix3d homography_matrix_;
+    Matrix3d homography_matrix;
 
     // parameters for line following
     // linear velocity

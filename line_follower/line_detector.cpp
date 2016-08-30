@@ -5,6 +5,7 @@
 #include "line_detector.h"
 #include <time.h>
 #include <sys/time.h>
+#include "parameter.h"
 
 #define print(var)  \
       std::cout<<#var"= "<<std::endl<<(var)<<std::endl
@@ -14,21 +15,10 @@ using namespace cv;
 using namespace Eigen;
 
 LineDetector::LineDetector(){
-    skip_step_ = 2;
-    horizon_th_ = 30;
-    black_th_ = 130;
-    // homography_matrix_ << 0.0, -13.3, 3200.0,
-    //                      1.5, -3.0, -240.0,
-    //                      0, -0.0125, 1;
-    // homography_matrix_ << -7.320533068622126e-16, -13.33333333333329, 3199.99999999999,
-    //                        1.499999999999994, -2.999999999999994, -239.9999999999988,
-    //                        -1.219727444046192e-18, -0.01249999999999997, 1;
-    homography_matrix_ << -1.609823385706477e-15, 6.666666666666675, 2.842170943040401e-14,
-                           -0.7500000000000022, 1.500000000000004, 480.0000000000001,
-                           -2.005774019098183e-18, 0.006250000000000012, 1;
-
-
-
+    skip_step_ = param_.skip_step;
+    horizon_th_ = param_.horizon_th;
+    black_th_ = param_.black_th;
+    homography_matrix_ = param_.homography_matrix;
 }
 
 void LineDetector::extract_black(Mat* src, Mat* dst, double th_g){
@@ -132,12 +122,15 @@ int LineDetector::detect_horizon(Mat *filtered){
 void LineDetector::get_filtered(Mat *src, Mat *filtered){
     Mat black_image = Mat::zeros(Size(src->cols / skip_step_ + 1, src->rows / skip_step_ + 1), CV_8U);
 
+    // first, get the black image
     extract_black(src, &black_image, black_th_);
     Mat filteredx = black_image.clone();
+    // apply sobel filter
     Sobel(black_image, filteredx, CV_8U, 1, 0);
     *filtered = filteredx;
 }
 
+// transform the point with homography matrix
 Vector2d LineDetector::transform_point_homography(Vector2d point){
     Vector3d p(point.x(), point.y(), 1);
     Vector3d t = homography_matrix_ * p;
@@ -145,6 +138,7 @@ Vector2d LineDetector::transform_point_homography(Vector2d point){
     return result;
 }
 
+// detect whether the line from p1 to p2 is crossed with the circle(center(0, 0), radius r)
 bool LineDetector::isCrossed(Vector2d p1, Vector2d p2, double r){
     Vector2d a = -p1;
     Vector2d b = -p2;
@@ -160,17 +154,36 @@ bool LineDetector::isCrossed(Vector2d p1, Vector2d p2, double r){
     }
 }
 
+// calculate the intersection point with line from point p1 to p2 and the circle(center (0, 0), radius r)
 vector<Vector2d> LineDetector::calc_intersection(Vector2d p1, Vector2d p2, double r){
     vector<Vector2d> result;
+    // if x is the same, intersection point's x = x, y = sqrt(r^2 - x^2)
     if(p2.x() - p1.x() == 0){
         result.push_back(Vector2d(p1.x(), sqrt(r * r - p1.x() * p1.x())));
     }
     else{
+        //-------------------------------------------------------------------
+        //calculation
+        //line equation 
+        // y = ax + b ----(1)
+        // a = (y2 - y1) / (x2 - x1)
+        // b = y1 - a * x1
+        // circle equation
+        // x^2 + y^2 = r^2 ----(2)
+        // solve these two equataion
+        // x = (-ab +- sqrt(a^2b^2 - (1 + a^2)(b^2 - r^2))) / (1 + a^2)
+        // y = ax + b
+        //-------------------------------------------------------------------
         double a = (p2.y() - p1.y()) / (p2.x() - p1.x());
         double b = p1.y() - a * p1.x();
         double sq = sqrt(a * a * b * b - (1 + a * a) * (b * b - r * r));
         double interx1 = (-a * b + sq) / (1 + a * a);
         double interx2 = (-a * b - sq) / (1 + a * a);
+
+        // if the calculated point is really intersection points, x should be
+        //  x0 <= x <= x1
+
+        // smaller point should be x0
         double x0, x1;
         if(p1.x() < p2.x()){
             x0 = p1.x();
@@ -191,22 +204,35 @@ vector<Vector2d> LineDetector::calc_intersection(Vector2d p1, Vector2d p2, doubl
 }
 
 
+// get goal point for control from an original image
 Vector2d LineDetector::get_goal_point(Mat *src, double r){
+    // first filter the image
     Mat filtered;
     int rows = src->cols;
     int cols = src->rows;
     get_filtered(src, &filtered);
+
+    // then get the horizon line
     int y_border = detect_horizon(&filtered);
+
+    // cut the image at the horizon
     Mat cutted(filtered, Rect(0, y_border, filtered.cols, (filtered.rows - y_border)));
+
+    // get lines by Hough transformation
     vector<Vec4i> lines;
     HoughLinesP(cutted, lines, 1, CV_PI/180, 80, 30, 8 );
+
+    // for each lines, calculate the intersection points
+    // if there is a intersection point, add to the vector
     vector<Vector2d> intersect_points;
     for(unsigned int i = 0; i < lines.size(); i++){
         Vec4i l = lines[i];
-        Vector2d p1(l[0] * 2, l[1] * 2);
-        Vector2d p2(l[2] * 2, l[3] * 2);
+        Vector2d p1(l[0] * skip_step_, l[1] * skip_step_);
+        Vector2d p2(l[2] * skip_step_, l[3] * skip_step_);
+        // transform the point to the floor coordinate
         Vector2d pstart = transform_point_homography(p1);
         Vector2d pend = transform_point_homography(p2);
+        // calculate the line point to the coordinate where center is x=0, bottom is y=0
         Vector2d l_start(cols / 2. - pstart.y(), rows - pstart.x());
         Vector2d l_end(cols / 2. - pend.y(), rows - pend.x());
         if(isCrossed(l_start, l_end, r)){
@@ -216,6 +242,7 @@ Vector2d LineDetector::get_goal_point(Mat *src, double r){
             }
         }
     }
+    // then, use the point that is nearest to the center
     int center_num = 0;
     int min_d = 10000;
     for(unsigned int i = 0; i < intersect_points.size(); i++){
@@ -225,7 +252,13 @@ Vector2d LineDetector::get_goal_point(Mat *src, double r){
             center_num = i;
         }
     }
-    return intersect_points[center_num];
+    if(intersect_points.size() > 0){
+        return intersect_points[center_num];
+    }
+    // if there is no intersection point, return (0, 0)
+    else{
+        return Vector2d(0, 0);
+    }
 }
 
 

@@ -2,10 +2,10 @@
 
 Parameter::Parameter(){
     // parameters for line detection
-    skip_step_ = 2;
-    horizon_th_ = 30;
-    black_th_ = 130;
-    homography_matrix_ << -1.61e-15, 6.67, 2.84e-14,
+    skip_step = 2;
+    horizon_th = 30;
+    black_th = 130;
+    homography_matrix << -1.61e-15, 6.67, 2.84e-14,
                            -0.75, 1.5, 480,
                            -2.0e-18, 0.00625, 1;
 
