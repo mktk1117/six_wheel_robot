@@ -7,9 +7,6 @@
 #include "serial_lib.h"
 #include "parameter.h"
 #include <raspicam/raspicam_cv.h>
-// #include "SioClientWrapper.h"
-// #include "Parser.h"
-// #include "DataMaker.h"
 
 #define print(var)  \
       std::cout<<#var"= "<<std::endl<<(var)<<std::endl
