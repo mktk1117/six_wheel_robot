@@ -3,6 +3,7 @@
 #include <Eigen/Core>
 #include <sstream>
 #include <string>
+#include <stdio.h>
 #include "line_detector.h"
 #include "line_follower.h"
 #define print(var)  \
@@ -29,11 +30,15 @@ int main(int argc, char *argv[]){
 
 
     org = imread(argv[1]);
+    for(int i = 0; i < 150; i++){
+    char filename[32];    
+    sprintf(filename, "image/exp5/image_%03d.jpg", i);
+    org = imread(filename);
 
     double linear, angular;
-    lf.get_control_velocity(&org, 100, &linear, &angular);
-    print(linear);
-    print(angular);
+    // lf.get_control_velocity(&org, 100, &linear, &angular);
+    // print(linear);
+    // print(angular);
 
 
     Vector2d intersect_point;
@@ -48,6 +53,7 @@ int main(int argc, char *argv[]){
     ld.extract_black(&org, &black_image, ld.param_.black_th);
     ld.get_filtered(&org, &filtered);
     int y_border = ld.detect_horizon(&filtered);
+    y_border = 120;
     imshow("Original", org);
     imshow("black", black_image);
     imshow("filtered", filtered);
@@ -63,6 +69,7 @@ int main(int argc, char *argv[]){
     
     vector<Vec4i> lines;
     HoughLinesP(cutted, lines, 1, CV_PI/180, 80, 30, 8 );
+    cout << "line size = " << lines.size() << endl;
     for(int i = 0; i < lines.size(); i++){
         Vec4i l = lines[i];
         double dx = l[2] - l[0];
@@ -71,11 +78,13 @@ int main(int argc, char *argv[]){
         if(d > 0){
             line(org, Point(l[0] * 2, (l[1] + y_border) * 2), Point(l[2] * 2, (l[3] + y_border) * 2), Scalar(255,0,0), 3, 8);
             line(colordst, Point(l[0], l[1] + y_border), Point(l[2], l[3] + y_border), Scalar(255,0,0), 3, 8);
+            Vector2d p1(l[0] * 2, l[1] * 2);
+            Vector2d p2(l[2] * 2, l[3] * 2);
+            Vector2d l_start = ld.transform_point_homography(p1);
+            Vector2d l_end = ld.transform_point_homography(p2);
+            cv::line(dst, Point((dst.cols - (int)l_start.y()), (int)l_start.x()), Point((dst.cols - (int)l_end.y()), (int)l_end.x()), Scalar(255,255,0), 3, 8);
         }
     }
-    Vec4i line = lines[0];
-    Vector2d p1(line[0] * 2, line[1] * 2);
-    Vector2d p2(line[2] * 2, line[3] * 2);
     
     Mat cutted_org(org, Rect(0, y_border * ld.skip_step_, org.cols, (org.rows - y_border * ld.skip_step_)));
     
@@ -124,13 +133,8 @@ int main(int argc, char *argv[]){
     // cout << "homography_matrix = " << homography_matrix << endl;
     Mat homodst;
     cv::warpPerspective(cutted_org, homodst, homography_matrix, org.size());
-    print(p1);
-    print(p2);
-    Vector2d l_start = ld.transform_point_homography(p1);
-    Vector2d l_end = ld.transform_point_homography(p2);
-    print(l_start);
-    print(l_end);
-    cv::line(dst, Point((dst.cols - (int)l_start.y()), (int)l_start.x()), Point((dst.cols - (int)l_end.y()), (int)l_end.x()), Scalar(255,255,0), 3, 8);
+    // print(p1);
+    // print(p2);
     print(intersect_point);
     cv::circle(dst, Point(dst.cols / 2 + intersect_point.x(), dst.rows - intersect_point.y()), 10, Scalar(255, 255, 0), 5);
     cv::circle(dst, Point(dst.cols / 2, dst.rows), r, Scalar(255, 255, 0), 5);
@@ -151,6 +155,8 @@ int main(int argc, char *argv[]){
     imwrite("before_transformed.jpg", org);
     // imwrite("after_transformed.jpg", homodst);
     imwrite("transformed_line.jpg", dst);
+    waitKey(500);
+    }
     waitKey(0);
     
     int cnt = 0;

@@ -15,6 +15,8 @@ public:
     int black_th;
     // matrix used at homography transformation
     Matrix3d homography_matrix;
+    // radius iteration to find intersection point
+    int r_itr;
 
     // parameters for line following
     // linear velocity
