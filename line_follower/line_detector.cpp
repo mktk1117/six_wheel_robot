@@ -127,6 +127,8 @@ void LineDetector::get_filtered(Mat *src, Mat *filtered){
     Mat filteredx = black_image.clone();
     // apply sobel filter
     Sobel(black_image, filteredx, CV_8U, 1, 0);
+    // Laplacian(black_image, filteredx, CV_8U, 3);
+    // Canny(black_image, filteredx, 50, 200);
     *filtered = filteredx;
 }
 
