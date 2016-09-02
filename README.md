@@ -10,18 +10,18 @@ It consists with
 - camera
 
 # Hardware architecture
-![system_hardware](wiki/images/system_hardware.png)
+![system_hardware](https://github.com/mktk1117/six_wheel_robot/wiki/images/system_hardware.png)
 
 # Software architecture
 ## Architecture with node.js
 This is the planned architecture.
 However, there was a problem with Socket.IO in C++ so the next simple architecture was used.
-![system_software](wiki/images/system_software.png)
+![system_software](https://github.com/mktk1117/six_wheel_robot/wiki/images/system_software.png)
 
 ## Architecture without node.js
 Since there was a problem, C++ process directly sends serial command to Arduino.
 The disadvantage of this system is that we can't control the robot remotely.
-![system_software2](wiki/images/system_software2.png)
+![system_software2](https://github.com/mktk1117/six_wheel_robot/wiki/images/system_software2.png)
 
 # Contents
 
