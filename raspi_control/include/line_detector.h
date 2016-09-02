@@ -15,6 +15,10 @@ public:
     int skip_step_;
     int horizon_th_;
     int black_th_;
+
+    // radius iteration to find intersection point
+    int r_itr_;
+
     Matrix3d homography_matrix_;
 
     Parameter param_;

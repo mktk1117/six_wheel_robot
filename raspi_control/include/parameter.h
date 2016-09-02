@@ -16,20 +16,22 @@ public:
     // matrix used at homography transformation
     Matrix3d homography_matrix;
 
+    // radius iteration to find intersection point
+    int r_itr;
+
     // parameters for line following
     // linear velocity
     double v_linear;
     // max angular velocity
     double v_angular_max;
 
-    // parameter for transforming between real length and image length
-    double image_to_real_ratio;
-    double real_to_image_ratio;
-
-    // parameter for control command making
     double linear_v_ratio;
     double angular_v_ratio;
     double left_right_ratio;
+
+    // parameter for transforming between real length and image length
+    double image_to_real_ratio;
+    double real_to_image_ratio;
 
     Parameter();
 };

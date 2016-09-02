@@ -19,6 +19,7 @@ LineDetector::LineDetector(){
     horizon_th_ = param_.horizon_th;
     black_th_ = param_.black_th;
     homography_matrix_ = param_.homography_matrix;
+    r_itr_ = param_.r_itr;
 }
 
 void LineDetector::extract_black(Mat* src, Mat* dst, double th_g){
@@ -49,6 +50,10 @@ void LineDetector::extract_black(Mat* src, Mat* dst, double th_g){
                     if(p > th_g){
                         dst->data[ y / skip_step_ * dst->step + x / skip_step_ * dst->elemSize()] = 255;
                     }
+                    if(r == 0 && g == 0 && b == 0){
+                        dst->data[ y / skip_step_ * dst->step + x / skip_step_ * dst->elemSize()] = 0;
+                    }
+
             }
     }
     return;
@@ -126,7 +131,9 @@ void LineDetector::get_filtered(Mat *src, Mat *filtered){
     extract_black(src, &black_image, black_th_);
     Mat filteredx = black_image.clone();
     // apply sobel filter
-    Sobel(black_image, filteredx, CV_8U, 1, 0);
+    // Sobel(black_image, filteredx, CV_8U, 1, 0);
+    Laplacian(black_image, filteredx, CV_8U, 3);
+    // Canny(black_image, filteredx, 50, 200);
     *filtered = filteredx;
 }
 
@@ -214,6 +221,7 @@ Vector2d LineDetector::get_goal_point(Mat *src, double r){
 
     // then get the horizon line
     int y_border = detect_horizon(&filtered);
+    y_border = 120;
 
     // cut the image at the horizon
     Mat cutted(filtered, Rect(0, y_border, filtered.cols, (filtered.rows - y_border)));
@@ -225,6 +233,8 @@ Vector2d LineDetector::get_goal_point(Mat *src, double r){
     // for each lines, calculate the intersection points
     // if there is a intersection point, add to the vector
     vector<Vector2d> intersect_points;
+    vector<Vector2d> start_points;
+    vector<Vector2d> end_points;
     for(unsigned int i = 0; i < lines.size(); i++){
         Vec4i l = lines[i];
         Vector2d p1(l[0] * skip_step_, l[1] * skip_step_);
@@ -235,12 +245,30 @@ Vector2d LineDetector::get_goal_point(Mat *src, double r){
         // calculate the line point to the coordinate where center is x=0, bottom is y=0
         Vector2d l_start(cols / 2. - pstart.y(), rows - pstart.x());
         Vector2d l_end(cols / 2. - pend.y(), rows - pend.x());
-        if(isCrossed(l_start, l_end, r)){
-            vector<Vector2d> intersect = calc_intersection(l_start, l_end, r);
-            for(unsigned int j = 0; j < intersect.size(); j++){
-                intersect_points.push_back(intersect[j]);
+        start_points.push_back(l_start);
+        end_points.push_back(l_end);
+    }
+    double r_step = r / r_itr_;
+    double r_intersect = r;
+    bool intersect_found = false;
+    // find the intersection point 
+    // if there isn't any points, reduce the radius and find again
+    for(int i = 0; i < r_itr_; i++){
+        for(unsigned int j = 0; j < start_points.size(); j++){
+            Vector2d l_start = start_points[j];
+            Vector2d l_end = end_points[j];
+            if(isCrossed(l_start, l_end, r_intersect)){
+                vector<Vector2d> intersect = calc_intersection(l_start, l_end, r_intersect);
+                for(unsigned int k = 0; k < intersect.size(); k++){
+                    intersect_points.push_back(intersect[k]);
+                    intersect_found = true;
+                }
             }
         }
+        if(intersect_found == true){
+            break;
+        }
+        r_intersect -= r_step;
     }
     // then, use the point that is nearest to the center
     int center_num = 0;

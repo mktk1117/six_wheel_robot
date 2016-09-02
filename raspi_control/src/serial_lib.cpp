@@ -43,7 +43,7 @@ void Serial::serial_write(char *str){
     for (int i = 0; i < 255; i++){  
         if (str[i] == '\n') {  
             inputcount = i;  
-            str[i] = 13;  
+            // str[i] = 13;  
             // str[i+1] = 10;  
             break;  
         }  

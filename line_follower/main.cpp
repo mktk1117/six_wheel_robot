@@ -30,10 +30,10 @@ int main(int argc, char *argv[]){
 
 
     org = imread(argv[1]);
-    for(int i = 0; i < 150; i++){
-    char filename[32];    
-    sprintf(filename, "image/exp5/image_%03d.jpg", i);
-    org = imread(filename);
+    // for(int i = 0; i < 150; i++){
+    // char filename[32];    
+    // sprintf(filename, "image/exp5/image_%03d.jpg", i);
+    // org = imread(filename);
 
     double linear, angular;
     // lf.get_control_velocity(&org, 100, &linear, &angular);
@@ -63,7 +63,7 @@ int main(int argc, char *argv[]){
     
     cvtColor(filtered, colordst, CV_GRAY2RGB);
     // line(org, Point(0, y_border * 2), Point((int)org.cols, y_border * 2), Scalar(0,0,255), 3, 8);
-    line(colordst, Point(0, y_border), Point((int)colordst.cols, y_border), Scalar(0,0,255), 3, 8);
+    // line(colordst, Point(0, y_border), Point((int)colordst.cols, y_border), Scalar(0,0,255), 3, 8);
     
     Mat cutted(filtered, Rect(0, y_border, filtered.cols, (filtered.rows - y_border)));
     
@@ -76,8 +76,8 @@ int main(int argc, char *argv[]){
         double dy = l[3] - l[1];
         double d = sqrt(dx * dx + dy * dy);
         if(d > 0){
-            line(org, Point(l[0] * 2, (l[1] + y_border) * 2), Point(l[2] * 2, (l[3] + y_border) * 2), Scalar(255,0,0), 3, 8);
-            line(colordst, Point(l[0], l[1] + y_border), Point(l[2], l[3] + y_border), Scalar(255,0,0), 3, 8);
+            // line(org, Point(l[0] * 2, (l[1] + y_border) * 2), Point(l[2] * 2, (l[3] + y_border) * 2), Scalar(255,0,0), 3, 8);
+            // line(colordst, Point(l[0], l[1] + y_border), Point(l[2], l[3] + y_border), Scalar(255,0,0), 3, 8);
             Vector2d p1(l[0] * 2, l[1] * 2);
             Vector2d p2(l[2] * 2, l[3] * 2);
             Vector2d l_start = ld.transform_point_homography(p1);
@@ -136,8 +136,8 @@ int main(int argc, char *argv[]){
     // print(p1);
     // print(p2);
     print(intersect_point);
-    cv::circle(dst, Point(dst.cols / 2 + intersect_point.x(), dst.rows - intersect_point.y()), 10, Scalar(255, 255, 0), 5);
-    cv::circle(dst, Point(dst.cols / 2, dst.rows), r, Scalar(255, 255, 0), 5);
+    // cv::circle(dst, Point(dst.cols / 2 + intersect_point.x(), dst.rows - intersect_point.y()), 10, Scalar(255, 255, 0), 5);
+    // cv::circle(dst, Point(dst.cols / 2, dst.rows), r, Scalar(255, 255, 0), 5);
     // cv::line(cutted_org, Point(p1.x(), p1.y()), Point(p2.x(), p2.y()), Scalar(255,255,0), 3, 8);
     
     // Vector2d p(org.cols , y_border * ld.skip_step_);
@@ -145,18 +145,19 @@ int main(int argc, char *argv[]){
     // print(ld.transform_point_homography(p));
     // print(ld.transform_point_homography(pp));
     
-    // imshow("Original", org);
-    // // imshow("black", black_image);
-    // // imshow("filteredx", filteredx);
-    // imshow("colordst", colordst);
+    imwrite("Original.jpg", org);
+    imwrite("black.jpg", black_image);
+    imwrite("filtered.jpg", filtered);
+    imshow("colordst", colordst);
+    imwrite("colordst.jpg", colordst);
     // imshow("cutted_org", cutted_org);
     imshow("homography", homodst);
     imshow("transformed", dst);
     imwrite("before_transformed.jpg", org);
-    // imwrite("after_transformed.jpg", homodst);
+    imwrite("after_transformed.jpg", homodst);
     imwrite("transformed_line.jpg", dst);
-    waitKey(500);
-    }
+    // waitKey(500);
+    // }
     waitKey(0);
     
     int cnt = 0;

@@ -5,20 +5,23 @@ Parameter::Parameter(){
     skip_step = 2;
     horizon_th = 30;
     black_th = 130;
-    homography_matrix << -1.61e-15, 6.67, 2.84e-14,
-                           -0.75, 1.5, 480,
-                           -2.0e-18, 0.00625, 1;
+    homography_matrix << -4.440892098500626e-16, 22.22222817189583, 2.842170943040401e-14,
+      -0.7500000000000013, 7.333335284009966, 479.9999999999999,
+        -1.951563910473908e-18, 0.03055556485192055, 1;
+
+    // radius iteration to find intersection point
+    r_itr = 10;
 
     // parameters for line following
     v_linear = 1;
     v_angular_max = 1;
 
+    // parameters for wheel controlling
+    linear_v_ratio = 50;
+    angular_v_ratio = 60;
+    left_right_ratio = 1.2;
+
     // parameter for transforming between real length and image length
     image_to_real_ratio = 1 / 100.;
     real_to_image_ratio = 100;
-
-    // parameter for making wheel control command
-    linear_v_ratio = 50;
-    angular_v_ratio = 70;
-    left_right_ratio = 1.2;
 }

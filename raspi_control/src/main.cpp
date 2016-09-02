@@ -24,7 +24,7 @@ int main(int argc, char *argv[]){
     cv::Mat image;
     // parameters
     Parameter param;
-    int nCount=100;
+    int nCount=1000;
     //set camera params
     Camera.set(CV_CAP_PROP_FORMAT, CV_8UC3);
     Camera.set(CV_CAP_PROP_FRAME_WIDTH, 640);
@@ -51,8 +51,8 @@ int main(int argc, char *argv[]){
 
         // make control command
         char serial_str[256];
-        int right = linear * param.linear_v_ratio + angular * param.angular_v_ratio;
-        int left = linear * param.linear_v_ratio - angular * param.angular_v_ratio;
+        int right = -linear * param.linear_v_ratio - angular * param.angular_v_ratio;
+        int left = -linear * param.linear_v_ratio + angular * param.angular_v_ratio;
         left *= param.left_right_ratio;
         sprintf(serial_str, "%d,%d,%d,%d,%d,%d*\n", right, left, right, left, right, left);
         // send to Arduino
