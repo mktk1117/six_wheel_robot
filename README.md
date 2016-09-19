@@ -9,6 +9,9 @@ It consists with
 - Raspberry Pi
 - Wifi module
 - camera
+ 
+
+[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/mx2YZQuVv9s/0.jpg)](http://www.youtube.com/watch?v=mx2YZQuVv9s)
 
 # Hardware architecture
 ![system_hardware](https://github.com/mktk1117/six_wheel_robot/wiki/images/system_hardware.png)
