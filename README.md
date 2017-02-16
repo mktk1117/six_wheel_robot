@@ -22,6 +22,7 @@ It consists with
 7. [Make a ROS package to communicate with Arduino to control motors](https://github.com/mktk1117/six_wheel_robot/wiki/Make-a-ROS-package-to-communicate-with-Arduino-to-control-motors)
 8. [Use raspberry pi camera module with OpenCV](https://github.com/mktk1117/six_wheel_robot/wiki/Use-raspberry-pi-camera-module-with-OpenCV)
 9. [Black line detection with OpenCV](https://github.com/mktk1117/six_wheel_robot/wiki/Black-line-detection-with-OpenCV)
+10. [Path following algorithm](https://github.com/mktk1117/six_wheel_robot/wiki/Path-following-algorithm)
  
 # Youtube Video
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/mx2YZQuVv9s/0.jpg)](http://www.youtube.com/watch?v=mx2YZQuVv9s)
